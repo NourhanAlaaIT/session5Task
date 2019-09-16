@@ -1,3 +1,4 @@
+var error = 0;
 // select the form
 var form = document.querySelector("#book-form");
 
@@ -12,7 +13,6 @@ form.addEventListener("submit", function(event) {
   event.preventDefault();
 
   // validate the form
-  var error = 0;
   var formfields = this.querySelectorAll("input, textarea");
   formfields.forEach(function(field) {
     var errorMsg = createElement(
@@ -20,49 +20,61 @@ form.addEventListener("submit", function(event) {
       "error-message",
       "Please fill this field"
     );
-
+  
     if (
       field.hasAttribute("required") &&
       field.value == "" &&
       !field.classList.contains("invalid")
-    ) {
+    ) 
+    {
       field.classList.add("invalid");
       field.parentElement.appendChild(errorMsg);
-
+  
       error +=1;
-    } else {
+    }
+    else if (field.value!=''){
       // reset the field if it's valid
-      field.classList.remove("invalid");
-      if (field.nextElementSibling) {
-        field.nextElementSibling.remove();
+          field.classList.remove("invalid");
+          console.log(field.value ==0)
+      
+          if (field.nextElementSibling)
+           {
+            field.nextElementSibling.remove();
+          }
+        error=0
       }
-    }
+
   });
-    if(error > 0){
-      return;
+    
+
+
+
+  // " IF NOW ERRORS "  create object of book 
+  if(error==0){
+    
+    var book = {
+      title: title.value,
+      author: author.value,
+      desc: desc.value
+    };
+  
+    //   make array of objects --> it's value will come from localStorage
+    var cards;
+    if (localStorage.getItem("cards") == null) {
+      cards = [];
+    } else {
+      cards = JSON.parse(localStorage.getItem("cards"));
     }
-  //   create object of book
-  var book = {
-    title: title.value,
-    author: author.value,
-    desc: desc.value
-  };
-
-  //   make array of objects --> it's value will come from localStorage
-  var cards;
-  if (localStorage.getItem("cards") == null) {
-    cards = [];
-  } else {
-    cards = JSON.parse(localStorage.getItem("cards"));
+  
+    //   add the book object to the array
+    cards.push(book);
+    //   store in localStorage
+    localStorage.setItem("cards", JSON.stringify(cards));
+  
+    // create the card with the content of form data
+    createbookCard(book);
+  
   }
-
-  //   add the book object to the array
-  cards.push(book);
-  //   store in localStorage
-  localStorage.setItem("cards", JSON.stringify(cards));
-
-  // create the card with the content of form data
-  createbookCard(book);
 
   //   reset the form
   this.reset();
